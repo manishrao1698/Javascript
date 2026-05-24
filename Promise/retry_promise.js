@@ -60,3 +60,36 @@ retry(fetchData, 5)
       }
     }
   }
+
+
+
+
+  //retry
+  Promise.retry = function (fn, retries) {
+    return new Promise((resolve, reject) => {
+      function attempt() {
+        fn()
+          .then(resolve)
+          .catch((err) => {
+            if (retries === 0) {
+              reject(err);
+            } else {
+              retries--;
+              attempt();
+            }
+          });
+      }
+  
+      attempt();
+    });
+  };
+
+
+Promise.retry(() => {
+  count++;
+
+  return new Promise((resolve, reject) => {
+    if (count === 3) resolve("Success");
+    else reject("Fail");
+  });
+}, 5).then(console.log);
